@@ -1,0 +1,53 @@
+## TPAddon by kotyk (@kotyk7);
+## The plugin messages are mostly in Polish.
+
+## We don't provide support if this section was changed.
+plugin:
+  version: 1.0-RELEASE
+
+## User section, something that user will often see
+user:
+  nazwa-itemu: "&1Token teleportacji"
+  token:
+    material1: "DIAMOND"
+    material2: "STICK"
+
+## Cooldown for /tpgui command
+cooldown: 30
+
+## The /tpgui name
+gui:
+  name: "GUI TELEPORTACJI"
+
+## Playerheads in /tpgui, texture is not a link and needs to be in Base64 format
+## Decoded texture example: {"textures":{"SKIN":{"url":"http://textures.minecraft.net/texture/438cf3f8e54afc3b3f91d20a49f324dca1486007fe545399055524c17941f4dc"}}}
+skin:
+  1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjE5ZTM2YTg3YmFmMGFjNzYzMTQzNTJmNTlhN2Y2M2JkYjNmNGM4NmJkOWJiYTY5Mjc3NzJjMDFkNGQxIn19fQ=="
+    name: "&1Spawn"
+  2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDM4Y2YzZjhlNTRhZmMzYjNmOTFkMjBhNDlmMzI0ZGNhMTQ4NjAwN2ZlNTQ1Mzk5MDU1NTI0YzE3OTQxZjRkYyJ9fX0="
+    name: "&1RandomTP"
+
+## Messages are in Polish, feel free to change them.
+messages:
+  prefix: "&6&l(&9&lTPAddon&6&l)&7 "
+  configReloaded: "Przeładowano config."
+  unknownCommand: "Nieznana komenda."
+  playernotfound: "Nie znaleziono gracza."
+  token:
+    noToken: "Nie posiadasz tokenu teleportacji. Jak go zdobyć? /token info"
+    give: "Przyznano ci token teleportacji."
+    giveother: "Przyznano graczowi %s token teleportacji."
+  cooldown:
+    message: "Tej komendy dopiero możesz użyć za %s sekund."
+    check: "Twój cooldown minie za: %ss"
+    nocooldown: "Nie posiadasz nałożonego cooldownu."
+    checkother: "Ten gracz ma %s sekund do końca cooldownu."
+  actionbar:
+    tptospawn: "&1Przeteleportowano cię do spawnu!"
+    functionnotdone: "&1Ta funkcja jest jeszcze niedostępna!"
+    cancelplace: "&1Nie można postawić tokenu teleportacji!"
+  gui:
+    open: "Otwieram GUI..."
+    openother: "Otwieram GUI dla %s"

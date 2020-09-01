@@ -1,0 +1,32 @@
+name: TPAddon
+description: TPAddon to plugin pozwalający na teleportacje graczy z wybranym przedmiotem w ekwipunku.
+main: me.kotyk.TPAddon.Main
+version: 1.0-SNAPSHOT
+author: kotyk
+depend: [EssentialsSpawn]
+softdepend: [Essentials]
+api-version: "1.16"
+
+commands:
+  tpaddon:
+    description: "Komenda administracyjna"
+    usage: "/tpaddon [subcommand]"
+
+  tpgui:
+    description: "GUI teleportacji"
+    usage: "/tpgui"
+    aliases:
+      - teleportgui
+  token:
+    description: "Informacje dotyczące tokenu, jak działa"
+    usage: "/token info"
+    aliases:
+      - tptoken
+
+permissions:
+  tpaddon.admin:
+    default: op
+  tpaddon.reload:
+    default: op
+  tpaddon.cooldownbypass:
+    default: op
