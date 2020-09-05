@@ -11,13 +11,15 @@ import java.util.Arrays;
 import java.util.List;
 
 public class tpaddon implements TabExecutor {
+    private Main plugin = new Main();
+    private Messages Messages = new Messages();
 
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (args.length < 1 || !sender.hasPermission("tpaddon.admin")) {
             sender.sendMessage(Messages.getMessage("version"));
         } else if (args[0].equalsIgnoreCase("reload")) {
-            Main.getTpAddon().reloadConfig();
-            Main.getTpAddon().recipe.checkIngredients();
+            plugin.reloadConfig();
+            plugin.recipe.checkIngredients();
             sender.sendMessage(Messages.getMessage("messages.configReloaded"));
         } else {
             sender.sendMessage(Messages.getMessage("messages.unknownCommand"));

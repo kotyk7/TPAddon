@@ -14,6 +14,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import static org.bukkit.Bukkit.getServer;
 
 public class Token implements Listener {
+    private Main plugin = new Main();
+    private Messages Messages = new Messages();
     public ItemStack token;
     public ItemMeta tokenMeta;
 
@@ -22,7 +24,7 @@ public class Token implements Listener {
         tokenMeta = token.getItemMeta();
         initializeToken();
 
-        getServer().getPluginManager().registerEvents(this, Main.getTpAddon());
+        getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     public void initializeToken() {

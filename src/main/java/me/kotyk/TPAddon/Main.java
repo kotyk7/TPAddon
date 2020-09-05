@@ -15,23 +15,27 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class Main extends JavaPlugin implements Listener {
-    private static Main self;
-    private static EssentialsSpawn essspawn;
+    private Main self;
+    private EssentialsSpawn essspawn;
     public TokenRecipe recipe;
     public static String version = "1.0";
     public String prefix;
     public static HashMap<UUID, Date> cooldowns = new HashMap<>();
+
+    public static boolean debug;
 
     @SuppressWarnings("ConstantConditions")
     @Override
     public void onEnable() {
         saveDefaultConfig();
         PluginManager pm = getServer().getPluginManager();
+        Config Config = new Config();
 
         self = this;
         prefix = Config.getString("messages.prefix");
         essspawn = (EssentialsSpawn) pm.getPlugin("EssentialsSpawn");
         recipe = new TokenRecipe();
+        debug = Config.getBoolean("plugin.debug");
 
         getLogger().info(String.format("TPAddon version %s succesfully loaded.", version));
 
@@ -40,7 +44,10 @@ public class Main extends JavaPlugin implements Listener {
         getCommand("token").setExecutor(new token());
 
         if(essspawn == null) {
-            getLogger().info("Nie znaleziono pluginu EssentialsSpawn, ten plugin jest wymagany do działania pluginu");
+            if(debug) {
+                getLogger().info("[DEBUG] No EssentialsSpawn found, this plugin won't work. Disabling");
+                pm.disablePlugin(this);
+            }
         }
 
         pm.registerEvents(this, this);
@@ -48,17 +55,24 @@ public class Main extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent e) {
-        e.getPlayer().discoverRecipe(TokenRecipe.nsKey);
+        if(debug) {
+            getLogger().info("[DEBUG/Main] discovering recipe for player " + e.getPlayer().getDisplayName());
+            getLogger().info("[DEBUG/Main] Result of adding recipe: " + e.getPlayer().discoverRecipe(recipe.nsKey));
+        }
+        e.getPlayer().discoverRecipe(recipe.nsKey);
     }
 
     @Override
     public void onDisable() {
-        recipe.checkRecipe();
+        if(debug) {
+            getLogger().info("[DEBUG/Main] Removing recipe");
+        }
+        recipe.checkAndRemoveRecipe();
     }
 
-    public static Main getTpAddon() { return self; }
+    public Main getTpAddon() { return self; }
 
-    public static EssentialsSpawn getEssentialsSpawn() {
+    public EssentialsSpawn getEssentialsSpawn() {
         return essspawn;
     }
 }

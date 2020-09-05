@@ -23,18 +23,27 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.UUID;
 
+import static org.bukkit.Bukkit.getLogger;
 import static org.bukkit.Bukkit.getServer;
 
 public class GUIManager implements Listener {
     private final Inventory inv;
     private ItemStack token;
+    private Main plugin = new Main();
+    private Config Config = new Config();
+    private Messages Messages = new Messages();
 
     public GUIManager() {
+        if(Main.debug) {
+            getLogger().info("[DEBUG/GUIManager] Initializing GUIManager class");
+        }
+
+
         inv = Bukkit.createInventory(null, 27, Messages.getMessage("gui.name"));
 
         initializeItems();
 
-        getServer().getPluginManager().registerEvents(this, Main.getTpAddon());
+        getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     public void initializeItems() {
@@ -99,7 +108,7 @@ public class GUIManager implements Listener {
 
         final Player p = (Player) e.getWhoClicked();
 
-        Location spawn = Main.getEssentialsSpawn().getSpawn("default");
+        Location spawn = plugin.getEssentialsSpawn().getSpawn("default");
         Inventory inv = p.getInventory();
 
         switch(e.getRawSlot()) {
