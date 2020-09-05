@@ -35,6 +35,13 @@ messages:
   configReloaded: "Przeładowano config."
   unknownCommand: "Nieznana komenda."
   playernotfound: "Nie znaleziono gracza."
+  tpa:
+    usage:
+      msg: "Wysyła zapytanie o teleportacje do drugiego gracza."
+      command: "/tpa <nick gracza>"
+    requests:
+      sent: "Wysłano zapytanie teleportacji do gracza %s"
+      received: "Otrzymano zapytanie teleportacji od gracza %s"
   token:
     noToken: "Nie posiadasz tokenu teleportacji. Jak go zdobyć? /token info"
     give: "Przyznano ci token teleportacji."

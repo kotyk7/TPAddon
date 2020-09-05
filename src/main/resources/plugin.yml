@@ -22,6 +22,9 @@ commands:
     usage: "/token info"
     aliases:
       - tptoken
+  tpa:
+    description: "Wysyła zapytanie teleportacji do drugiego gracza"
+    usage: "/tpa gracz"
 
 permissions:
   tpaddon.admin:

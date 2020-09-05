@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 public class Messages {
     public static String getMessage(String message) {
-        String[] array = {"user.nazwa-itemu", "gui.name", "skin.1.name", "skin.2.name", "messages.actionbar.tptospawn", "messages.actionbar.functionnotdone"};
+        String[] array = {"user.nazwa-itemu", "gui.name", "skin.1.name", "skin.2.name", "messages.actionbar.tptospawn", "messages.actionbar.functionnotdone", "messages.tpa.usage", "messages.tpa.command"};
 
         if(Arrays.asList(array).contains(message)) {
             return ChatColor.translateAlternateColorCodes('&', Config.getString(message));
