@@ -156,3 +156,6 @@ buildNumber.properties
 .history
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,intellij,maven,java
+
+# Local settings for deploying
+settings-local.xml
