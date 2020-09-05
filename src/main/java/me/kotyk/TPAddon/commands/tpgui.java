@@ -14,8 +14,6 @@ import java.util.*;
 import java.util.List;
 
 public class tpgui implements TabExecutor {
-    private CooldownManager CooldownManager = new CooldownManager();
-    private Messages Messages = new Messages();
     private final ItemStack token;
 
     public tpgui() {

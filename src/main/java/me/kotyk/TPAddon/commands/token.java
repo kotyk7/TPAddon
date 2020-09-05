@@ -11,8 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class token implements TabExecutor {
-    private Messages Messages = new Messages();
-
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (args.length < 1) {
             sender.sendMessage(Messages.getMessage("messages.token.info"));

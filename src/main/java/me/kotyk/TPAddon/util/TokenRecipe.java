@@ -10,19 +10,17 @@ import static org.bukkit.Bukkit.getLogger;
 import static org.bukkit.Bukkit.getServer;
 
 public class TokenRecipe {
-    private Main plugin = new Main();
-    private Config Config = new Config();
-    public NamespacedKey nsKey = new NamespacedKey(plugin, "teleport_token");
-    private final Token tokenclass = new Token();
-    private final ItemStack token = tokenclass.token;
-    private final ShapedRecipe tokenRecipe = new ShapedRecipe(nsKey, token);
+    public static NamespacedKey nsKey = new NamespacedKey(Main.getTpAddon(), "teleport_token");
+    private final static Token tokenclass = new Token();
+    private final static ItemStack token = tokenclass.token;
+    private final static ShapedRecipe tokenRecipe = new ShapedRecipe(nsKey, token);
 
 
     public TokenRecipe() {
         checkIngredients();
     }
 
-    public void checkAndRemoveRecipe() {
+    public void checkRecipe() {
         if (getServer().getRecipe(nsKey) != null) {
             getServer().removeRecipe(nsKey);
         }
@@ -41,7 +39,7 @@ public class TokenRecipe {
             tokenRecipe.setIngredient('d', material1);
             tokenRecipe.setIngredient('r', material2);
 
-            checkAndRemoveRecipe();
+            checkRecipe();
             getServer().addRecipe(tokenRecipe);
 
         } else {

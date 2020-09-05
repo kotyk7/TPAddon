@@ -4,7 +4,7 @@
 ## We don't provide support if this section was changed.
 plugin:
   version: 1.0-RELEASE
-  debug: true
+
 ## User section, something that user will often see
 user:
   nazwa-itemu: "&1Token teleportacji"
@@ -39,7 +39,6 @@ messages:
     noToken: "Nie posiadasz tokenu teleportacji. Jak go zdobyć? /token info"
     give: "Przyznano ci token teleportacji."
     giveother: "Przyznano graczowi %s token teleportacji."
-    info: "TO-DO: make an token.info message"
   cooldown:
     message: "Tej komendy dopiero możesz użyć za %s sekund."
     check: "Twój cooldown minie za: %ss"
