@@ -23,7 +23,7 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
     - name: Build with Maven and Deploy
-        env:
-          GITHUB_USERNAME: ${{ secrets.USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      env:
+       GITHUB_USERNAME: ${{ secrets.USERNAME }}
+       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       run: mvn --settings settings.xml deploy
