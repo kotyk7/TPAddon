@@ -3,11 +3,12 @@
 
 ## We don't provide support if this section was changed.
 plugin:
-  version: 1.0-RELEASE
+  debug: false # more stuff in console
+  version: 1.1-rc.v1 # version
 
 ## User section, something that user will often see
 user:
-  nazwa-itemu: "&1Token teleportacji"
+  nazwa-itemu: "&1Token teleportacji" # Name change will cause problems with canceling token placement
   token:
     material1: "DIAMOND"
     material2: "STICK"

@@ -1,5 +1,6 @@
 package me.kotyk.TPAddon.commands;
 
+import me.kotyk.TPAddon.Main;
 import me.kotyk.TPAddon.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -15,9 +16,11 @@ import java.util.List;
 
 public class tpgui implements TabExecutor {
     private final ItemStack token;
+    private final GUIManager GM;
 
-    public tpgui() {
+    public tpgui(Main main) {
         Token tokenClass = new Token();
+        GM = new GUIManager(main);
         token = tokenClass.token;
     }
 
@@ -142,7 +145,6 @@ public class tpgui implements TabExecutor {
      * @param p Gracz, któremu chcemy otworzyć GUI
      */
     public void openGUI(Player p) {
-        GUIManager GM = new GUIManager();
         GM.openInventory(p);
     }
 

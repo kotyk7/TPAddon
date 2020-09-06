@@ -1,21 +1,28 @@
 package me.kotyk.TPAddon.commands;
 
+import com.earth2me.essentials.IUser;
 import com.earth2me.essentials.User;
 import me.kotyk.TPAddon.Main;
 import me.kotyk.TPAddon.util.Messages;
+import net.ess3.api.events.TPARequestEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class tpa implements TabExecutor {
-    public tpa() {
+import static org.bukkit.Bukkit.getServer;
+
+public class tpa implements TabExecutor, Listener {
+    public tpa(Main main) {
+        main.pm.registerEvents(this, main);
     }
 
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
@@ -27,11 +34,14 @@ public class tpa implements TabExecutor {
 
         Player player = (Player) sender;
         Player target = Bukkit.getPlayerExact(args[0]);
-        User user = Main.getEssentials().getUser(target);
+        User esssender = Main.getEssentials().getUser(player);
+        User esstarget = Main.getEssentials().getUser(target);
 
         if (target != null) {
+            TPARequestEvent tpaEvent = new TPARequestEvent(esssender.getSource(), esstarget, false);
+            getServer().getPluginManager().callEvent(tpaEvent);
             sender.sendMessage(String.format(Messages.getMessage("messages.tpa.requests.sent"), target.getName()));
-            Main.getEssentials().getUser(player).requestTeleport(user, false);
+            esstarget.requestTeleport(esssender, false);
         } else {
             sender.sendMessage(Messages.getMessage("messages.playernotfound"));
         }
@@ -43,5 +53,13 @@ public class tpa implements TabExecutor {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         //noinspection ArraysAsListWithZeroOrOneArgument
         return Arrays.asList("info");
+    }
+
+    @EventHandler
+    public void onTPRequest(final TPARequestEvent e) {
+        Player requester = e.getRequester().getPlayer();
+        IUser target = e.getTarget();
+
+        target.sendMessage(String.format(Messages.getMessage("messages.tpa.requests.received"), requester.getName()));
     }
 }

@@ -29,14 +29,17 @@ public class GUIManager implements Listener {
     private final Inventory inv;
     private ItemStack token;
 
-    public GUIManager() {
+    public GUIManager(Main main) {
         inv = Bukkit.createInventory(null, 27, Messages.getMessage("gui.name"));
 
         initializeItems();
 
-        getServer().getPluginManager().registerEvents(this, Main.getTpAddon());
+        main.pm.registerEvents(this, Main.getMain());
     }
 
+    /**
+     * Initialize items in the GUI
+     */
     public void initializeItems() {
         for (int i = 0; i < 27; i++) {
             inv.setItem(i, createGuiItem(Material.BLACK_STAINED_GLASS_PANE, "⠀"));
@@ -48,15 +51,21 @@ public class GUIManager implements Listener {
         token = tokenClass.token;
     }
 
-    private static ItemStack createSkull(String url, String name) {
+    /**
+     * Create player head from texture and name
+     * @param texture base64 texture value
+     * @param name Name of the itemstack
+     * @return head with the texture and name
+     */
+    private static ItemStack createSkull(String texture, String name) {
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-        if (url.isEmpty())
+        if (texture.isEmpty())
             return head;
 
         SkullMeta headMeta = (SkullMeta) head.getItemMeta();
         GameProfile profile = new GameProfile(UUID.randomUUID(), null);
 
-        profile.getProperties().put("textures", new Property("textures", url));
+        profile.getProperties().put("textures", new Property("textures", texture));
         headMeta.setDisplayName(name);
 
         try {
@@ -71,6 +80,13 @@ public class GUIManager implements Listener {
         return head;
     }
 
+    /**
+     * Create a GUI item
+     * @param material Item in Material class
+     * @param name Name of the item
+     * @param lore Lore of the item
+     * @return Created ItemStack
+     */
     @SuppressWarnings("SameParameterValue")
     protected ItemStack createGuiItem(final Material material, final String name, final String... lore) {
         final ItemStack item = new ItemStack(material, 1);
@@ -83,6 +99,10 @@ public class GUIManager implements Listener {
         return item;
     }
 
+    /**
+     * Open an inventory to player
+     * @param ent Player/Entity
+     */
     public void openInventory(final HumanEntity ent) {
         ent.openInventory(inv);
     }

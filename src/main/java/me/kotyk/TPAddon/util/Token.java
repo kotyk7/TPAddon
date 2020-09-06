@@ -22,7 +22,7 @@ public class Token implements Listener {
         tokenMeta = token.getItemMeta();
         initializeToken();
 
-        getServer().getPluginManager().registerEvents(this, Main.getTpAddon());
+        getServer().getPluginManager().registerEvents(this, Main.getMain());
     }
 
     public void initializeToken() {
@@ -42,12 +42,10 @@ public class Token implements Listener {
     @EventHandler
     public void interactEvent(final PlayerInteractEvent e) {
         if(e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getItem() != null) {
-            if(e.getItem() == token) {
-                String name = e.getItem().getItemMeta().getDisplayName();
-                if(name.contains("§1token teleportacji")) {
-                    e.setCancelled(true);
-                    e.getPlayer().sendActionBar(Messages.getMessage("messages.actionbar.cancelplace"));
-                }
+            String name = e.getItem().getItemMeta().getDisplayName().toLowerCase();
+            if(name.contains("§1token teleportacji")) {
+                e.setCancelled(true);
+                e.getPlayer().sendActionBar(Messages.getMessage("messages.actionbar.cancelplace"));
             }
         }
     }

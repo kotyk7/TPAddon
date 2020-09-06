@@ -1,5 +1,6 @@
 package me.kotyk.TPAddon.commands;
 
+import me.kotyk.TPAddon.Main;
 import me.kotyk.TPAddon.util.Messages;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -11,6 +12,10 @@ import java.util.Arrays;
 import java.util.List;
 
 public class token implements TabExecutor {
+    public token(Main main) {
+
+    }
+
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (args.length < 1) {
             sender.sendMessage(Messages.getMessage("messages.token.info"));

@@ -1,35 +1,77 @@
 name: TPAddon
-description: TPAddon to plugin pozwalający na teleportacje graczy z wybranym przedmiotem w ekwipunku.
+description: TPAddon is a plugin that redefines teleportation methods on your server!
 main: me.kotyk.TPAddon.Main
-version: 1.0-SNAPSHOT
-author: kotyk
+version: 1.1-rc.v1
+author: kotyk7
 depend: [EssentialsSpawn]
+website: https://github.com/kotyk7/TPAddon
 softdepend: [Essentials]
 api-version: "1.16"
 
 commands:
   tpaddon:
     description: "Komenda administracyjna"
-    usage: "/tpaddon [subcommand]"
+    usage: "/tpaddon <subcommand>"
 
   tpgui:
-    description: "GUI teleportacji"
-    usage: "/tpgui"
+    description: "Teleportation GUI"
+    usage: "/tpgui <subcommand>"
     aliases:
       - teleportgui
   token:
-    description: "Informacje dotyczące tokenu, jak działa"
-    usage: "/token info"
+    description: "Token information, how to get it"
+    usage: "/token <subcommand>"
     aliases:
       - tptoken
   tpa:
-    description: "Wysyła zapytanie teleportacji do drugiego gracza"
-    usage: "/tpa gracz"
+    description: "Sends a teleportation request to another player"
+    usage: "/tpa <player>"
 
 permissions:
+  tpaddon.*:
+    default: op
+    children:
+      tpaddon.admin: true
+      tpaddon.reload: true
+      tpaddon.cooldown.*: true
+      tpaddon.give: true
+      tpaddon.give.others: true
+      tpaddon.open: true
+      tpaddon.open.others: true
   tpaddon.admin:
-    default: op
+    description: "Access to all TPAddon commands"
+    default: false
+    children:
+      tpaddon.*: true
   tpaddon.reload:
-    default: op
-  tpaddon.cooldownbypass:
-    default: op
+    description: "Allows to reload the configuration"
+    default: false
+  tpaddon.cooldown.*:
+    description: "All cooldown specific permissions"
+    default: false
+    children:
+      tpaddon.cooldown.others: true
+      tpaddon.cooldown.bypass: true
+  tpaddon.give:
+    description: "Allows to give the token"
+    default: false
+  tpaddon.give.*:
+    description: "Allows to give the token to yourself and someone else"
+    default: false
+    children:
+      tpaddon.give.others: true
+  tpaddon.give.others:
+    description: "Allows to give the token to a player"
+    default: false
+  tpaddon.open:
+    description: "Allows to open the GUI"
+    default: false
+  tpaddon.open.*:
+    description: "Allows to open the GUI to yourself and someone else"
+    default: false
+    children:
+      tpaddon.open.others: true
+  tpaddon.open.others:
+    description: "Allows to open GUI to someone"
+    default: false
+

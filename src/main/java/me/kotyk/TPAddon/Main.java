@@ -2,12 +2,12 @@ package me.kotyk.TPAddon;
 
 import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.spawn.EssentialsSpawn;
-import me.kotyk.TPAddon.commands.*;
+import me.kotyk.TPAddon.commands.token;
+import me.kotyk.TPAddon.commands.tpa;
+import me.kotyk.TPAddon.commands.tpaddon;
+import me.kotyk.TPAddon.commands.tpgui;
 import me.kotyk.TPAddon.util.Config;
-import me.kotyk.TPAddon.util.Messages;
 import me.kotyk.TPAddon.util.TokenRecipe;
-import net.ess3.api.events.TPARequestEvent;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -18,38 +18,43 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
-import static org.bukkit.Bukkit.getServer;
-
 public class Main extends JavaPlugin implements Listener {
     private static Main self;
-    private static EssentialsSpawn essspawn;
-    private static Essentials ess;
-    public TokenRecipe recipe;
+    private static Essentials Essentials;
+    private static EssentialsSpawn EssentialsSpawn;
+    public static boolean debug = false;
     public static String version = "1.0";
-    public String prefix;
     public static HashMap<UUID, Date> cooldowns = new HashMap<>();
+    public PluginManager pm;
+    public TokenRecipe recipe;
+    public String prefix;
 
     @SuppressWarnings("ConstantConditions")
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        PluginManager pm = getServer().getPluginManager();
+        pm = getServer().getPluginManager();
 
         self = this;
         prefix = Config.getString("messages.prefix");
-        ess = (Essentials) pm.getPlugin("Essentials");
-        essspawn = (EssentialsSpawn) pm.getPlugin("EssentialsSpawn");
+        Essentials = (Essentials) pm.getPlugin("Essentials");
+        EssentialsSpawn = (EssentialsSpawn) pm.getPlugin("EssentialsSpawn");
         recipe = new TokenRecipe();
+        debug = Config.getBoolean("debug");
 
         getLogger().info(String.format("TPAddon version %s succesfully loaded.", version));
 
-        getCommand("tpaddon").setExecutor(new tpaddon());
-        getCommand("tpgui").setExecutor(new tpgui());
-        getCommand("token").setExecutor(new token());
-        getCommand("tpa").setExecutor(new tpa());
+        getCommand("tpaddon").setExecutor(new tpaddon(this));
+        getCommand("tpgui").setExecutor(new tpgui(this));
+        getCommand("token").setExecutor(new token(this));
+        getCommand("tpa").setExecutor(new tpa(this));
 
-        if(essspawn == null) {
-            getLogger().info("Nie znaleziono pluginu EssentialsSpawn, ten plugin jest wymagany do działania pluginu");
+        if (Essentials == null) {
+            getLogger().info("Essentials not found! This plugin is not required, but recommended.");
+        }
+        if (EssentialsSpawn == null) {
+            getLogger().warning("EssentialsSpawn not found! This plugin is required, disabling.");
+            pm.disablePlugin(this);
         }
 
         pm.registerEvents(this, this);
@@ -60,25 +65,30 @@ public class Main extends JavaPlugin implements Listener {
         e.getPlayer().discoverRecipe(TokenRecipe.nsKey);
     }
 
-    @EventHandler
-    public void onTPRequest(final TPARequestEvent e) {
-        Player requester = e.getRequester().getPlayer();
-        Player target = (Player) e.getTarget();
-
-        target.sendMessage(String.format(Messages.getMessage("messages.tpa.requests.received"), requester.getName()));
-    }
-
     @Override
     public void onDisable() {
         recipe.checkRecipe();
     }
 
-    public static Main getTpAddon() { return self; }
+    /**
+     * Returns static Main class
+     * @return Main class
+     */
+    public static Main getMain() { return self; }
 
+    /**
+     * Returns static Essentials class
+     * @return Essentials class
+     */
     public static Essentials getEssentials() {
-        return ess;
+        return Essentials;
     }
+
+    /**
+     * Returns static EssentialsSpawn class
+     * @return EssentialsSpawn class
+     */
     public static EssentialsSpawn getEssentialsSpawn() {
-        return essspawn;
+        return EssentialsSpawn;
     }
 }

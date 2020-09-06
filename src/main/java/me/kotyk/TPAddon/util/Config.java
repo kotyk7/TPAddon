@@ -11,7 +11,7 @@ public class Config {
      * @return The configuration for this server.
      */
     public static FileConfiguration getConfig() {
-        return Main.getTpAddon().getConfig();
+        return Main.getMain().getConfig();
     }
 
     /**
