@@ -1,5 +1,6 @@
 package me.kotyk.TPAddon.commands;
 
+import me.kotyk.TPAddon.Main;
 import me.kotyk.TPAddon.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -14,15 +15,18 @@ import java.util.*;
 import java.util.List;
 
 public class tpgui implements TabExecutor {
-    private final ItemStack token;
+    private Main main;
 
-    public tpgui() {
-        Token tokenClass = new Token();
-        token = tokenClass.token;
+    public tpgui(Main main) {
+        this.main = main;
     }
 
     @Override
     public boolean onCommand(@Nonnull CommandSender sender, @Nonnull Command command, @Nonnull String s, @Nonnull String[] args) {
+        GUIManager GM = main.getGM();
+        Messages msg = main.getMessages();
+        ItemStack token = main.getToken().token;
+
         if(!(sender instanceof Player)) { sender.sendMessage("Ta komenda nie jest dostępna z poziomu konsoli."); return true; }
 
         Player player = (Player) sender;
@@ -31,16 +35,16 @@ public class tpgui implements TabExecutor {
         // Brak argumentów
         if (args.length < 1) {
             if (inv.containsAtLeast(token, 1)) {
-                if(!CooldownManager.isOnCooldown(player)) {
-                    sender.sendMessage(Messages.getMessage("messages.gui.open"));
+                if(!Cooldown.isOnCooldown(player)) {
+                    sender.sendMessage(msg.get("messages.gui.open"));
                     openGUI(player);
-                    CooldownManager.setCooldownTime(player);
+                    Cooldown.setCooldownTime(player);
                 }
                 else {
-                    sender.sendMessage(Messages.createFormattedMessage("messages.cooldown.message", CooldownManager.getCooldown(player)));
+                    sender.sendMessage(msg.format("messages.cooldown.message", Cooldown.getCooldown(player)));
                 }
             } else {
-                sender.sendMessage(Messages.getMessage("messages.token.noToken"));
+                sender.sendMessage(msg.get("messages.token.noToken"));
             }
             return true;
         }
@@ -56,81 +60,81 @@ public class tpgui implements TabExecutor {
                         Player target = Bukkit.getPlayerExact(args[1]);
                         assert target != null;
                         if (!target.isOnline()) {
-                            sender.sendMessage(Messages.getMessage("messages.playernotfound"));
+                            sender.sendMessage(msg.get("messages.playernotfound"));
                         }
-                        sender.sendMessage(Messages.createFormattedMessage("messages.cooldown.checkother", CooldownManager.getCooldown(target)));
+                        sender.sendMessage(msg.format("messages.cooldown.checkother", Cooldown.getCooldown(target)));
                     } catch (ArrayIndexOutOfBoundsException e) {
-                        if (CooldownManager.getCooldown(player) <= 0) {
-                            sender.sendMessage(Messages.createFormattedMessage("messages.cooldown.check", CooldownManager.getCooldown(player)));
+                        if (Cooldown.getCooldown(player) <= 0) {
+                            sender.sendMessage(msg.format("messages.cooldown.check", Cooldown.getCooldown(player)));
                         } else {
-                            sender.sendMessage(Messages.getMessage("messages.cooldown.nocooldown"));
+                            sender.sendMessage(msg.get("messages.cooldown.nocooldown"));
                         }
                     }
                 } else {
-                    if (CooldownManager.getCooldown(player) <= 0) {
-                        sender.sendMessage(Messages.createFormattedMessage("messages.cooldown.check", CooldownManager.getCooldown(player)));
+                    if (Cooldown.getCooldown(player) <= 0) {
+                        sender.sendMessage(msg.format("messages.cooldown.check", Cooldown.getCooldown(player)));
                     } else {
-                        sender.sendMessage(Messages.getMessage("messages.cooldown.nocooldown"));
+                        sender.sendMessage(msg.get("messages.cooldown.nocooldown"));
                     }
                 }
                 break;
             }
             case "cooldownreset": {
-                if(!sender.hasPermission("tpaddon.cooldown.reset")) { sender.sendMessage(Messages.getMessage("messages.unknownCommand")); return true;}
+                if(!sender.hasPermission("tpaddon.cooldown.reset")) { sender.sendMessage(msg.get("messages.unknownCommand")); return true;}
                     try {
                     Player target = Bukkit.getPlayerExact(args[1]);
                     assert target != null;
-                    if (!target.isOnline()) { sender.sendMessage(Messages.getMessage("messages.playernotfound")); }
-                        sender.sendMessage(Messages.createFormattedMessage("messages.cooldown.reset", target.getName()));
-                    CooldownManager.removeCooldownTime(target);
+                    if (!target.isOnline()) { sender.sendMessage(msg.get("messages.playernotfound")); }
+                        sender.sendMessage(msg.format("messages.cooldown.reset", target.getName()));
+                    Cooldown.removeCooldownTime(target);
                     break;
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    sender.sendMessage(Messages.createFormattedMessage("messages.cooldown.reset", player.getName()));
-                    CooldownManager.removeCooldownTime(player);
+                    sender.sendMessage(msg.format("messages.cooldown.reset", player.getName()));
+                    Cooldown.removeCooldownTime(player);
                     break;
                 }
             }
 
             case "give": {
                 try {
-                    if(!sender.hasPermission("tpaddon.give.others")) { sender.sendMessage(Messages.getMessage("messages.unknownCommand")); return true;}
+                    if(!sender.hasPermission("tpaddon.give.others")) { sender.sendMessage(msg.get("messages.unknownCommand")); return true;}
                     Player target = Bukkit.getPlayerExact(args[1]);
                     assert target != null;
                     if (!target.isOnline()) {
-                        sender.sendMessage(Messages.getMessage("messages.playernotfound"));
+                        sender.sendMessage(msg.get("messages.playernotfound"));
                         break;
                     }
                     target.getInventory().addItem(token);
-                    sender.sendMessage(Messages.createFormattedMessage("messages.token.giveother", target.getName()));
+                    sender.sendMessage(msg.format("messages.token.giveother", target.getName()));
                     break;
                 } catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
-                    if(!sender.hasPermission("tpaddon.give")) { sender.sendMessage(Messages.getMessage("messages.unknownCommand")); return true;}
-                    sender.sendMessage(Messages.getMessage("messages.token.give"));
+                    if(!sender.hasPermission("tpaddon.give")) { sender.sendMessage(msg.get("messages.unknownCommand")); return true;}
+                    sender.sendMessage(msg.get("messages.token.give"));
                     inv.addItem(token);
                     break;
                 }
             }
             case "open": {
                 try {
-                    if(!sender.hasPermission("tpaddon.open.others")) { sender.sendMessage(Messages.getMessage("messages.unknownCommand")); return true;}
+                    if(!sender.hasPermission("tpaddon.open.others")) { sender.sendMessage(msg.get("messages.unknownCommand")); return true;}
                     Player target = Bukkit.getPlayerExact(args[1]);
                     assert target != null;
                     if (!target.isOnline()) {
-                        sender.sendMessage(Messages.getMessage("messages.playernotfound"));
+                        sender.sendMessage(msg.get("messages.playernotfound"));
                         break;
                     }
                     openGUI(target);
-                    sender.sendMessage(Messages.createFormattedMessage("messages.gui.openother", target.getName()));
+                    sender.sendMessage(msg.format("messages.gui.openother", target.getName()));
                     break;
                 } catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
-                    if(!sender.hasPermission("tpaddon.open")) { sender.sendMessage(Messages.getMessage("messages.unknownCommand")); return true;}
-                    sender.sendMessage(Messages.getMessage("messages.gui.open"));
+                    if(!sender.hasPermission("tpaddon.open")) { sender.sendMessage(msg.get("messages.unknownCommand")); return true;}
+                    sender.sendMessage(msg.get("messages.gui.open"));
                     openGUI(player);
                     break;
                 }
             }
             default: {
-                sender.sendMessage(Messages.getMessage("messages.unknownCommand"));
+                sender.sendMessage(msg.get("messages.unknownCommand"));
                 break;
             }
         }
@@ -142,8 +146,7 @@ public class tpgui implements TabExecutor {
      * @param p Gracz, któremu chcemy otworzyć GUI
      */
     public void openGUI(Player p) {
-        GUIManager GM = new GUIManager();
-        GM.openInventory(p);
+        main.getGM().openInventory(p);
     }
 
     @Override

@@ -14,19 +14,22 @@ import org.bukkit.inventory.meta.ItemMeta;
 import static org.bukkit.Bukkit.getServer;
 
 public class Token implements Listener {
+    private Messages msg;
     public ItemStack token;
     public ItemMeta tokenMeta;
 
-    public Token() {
-        token = new ItemStack(Material.REDSTONE_TORCH);
-        tokenMeta = token.getItemMeta();
+    public Token(Main main) {
+        this.msg = main.getMessages();
+
+        this.token = new ItemStack(Material.REDSTONE_TORCH);
+        this.tokenMeta = token.getItemMeta();
         initializeToken();
 
-        getServer().getPluginManager().registerEvents(this, Main.getTpAddon());
+        getServer().getPluginManager().registerEvents(this, main);
     }
 
     public void initializeToken() {
-        tokenMeta.setDisplayName(Messages.getMessage("user.nazwa-itemu"));
+        tokenMeta.setDisplayName(msg.get("user.nazwa-itemu"));
         token.setItemMeta(tokenMeta);
         addEnchant(Enchantment.ARROW_KNOCKBACK, 1, token, tokenMeta, true);
     }
@@ -42,12 +45,10 @@ public class Token implements Listener {
     @EventHandler
     public void interactEvent(final PlayerInteractEvent e) {
         if(e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getItem() != null) {
-            if(e.getItem() == token) {
-                String name = e.getItem().getItemMeta().getDisplayName();
-                if(name.contains("§1token teleportacji")) {
-                    e.setCancelled(true);
-                    e.getPlayer().sendActionBar(Messages.getMessage("messages.actionbar.cancelplace"));
-                }
+            String name = e.getItem().getItemMeta().getDisplayName().toLowerCase();
+            if(name.contains("§1token teleportacji")) {
+                e.setCancelled(true);
+                e.getPlayer().sendActionBar(msg.get("messages.actionbar.cancelplace"));
             }
         }
     }

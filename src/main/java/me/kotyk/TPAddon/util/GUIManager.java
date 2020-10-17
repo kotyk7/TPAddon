@@ -23,40 +23,51 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.UUID;
 
-import static org.bukkit.Bukkit.getServer;
-
 public class GUIManager implements Listener {
+    private Main main;
+    private Messages msg;
     private final Inventory inv;
     private ItemStack token;
 
-    public GUIManager() {
-        inv = Bukkit.createInventory(null, 27, Messages.getMessage("gui.name"));
+    public GUIManager(Main main) {
+        this.main = main;
+        this.token = main.getToken().token;
+        this.msg = main.getMessages();
+
+        this.inv = Bukkit.createInventory(null, 27, msg.get("gui.name"));
 
         initializeItems();
 
-        getServer().getPluginManager().registerEvents(this, Main.getTpAddon());
+        main.pm.registerEvents(this, main);
     }
 
+    /**
+     * Initialize items in the GUI
+     */
     public void initializeItems() {
         for (int i = 0; i < 27; i++) {
             inv.setItem(i, createGuiItem(Material.BLACK_STAINED_GLASS_PANE, "⠀"));
         }
-        inv.setItem(11, createSkull(Config.getString("skin.1.texture"), Messages.getMessage("skin.1.name")));
-        inv.setItem(15, createSkull(Config.getString("skin.2.texture"), Messages.getMessage("skin.2.name")));
 
-        Token tokenClass = new Token();
-        token = tokenClass.token;
+        inv.setItem(11, createSkull(main.getConfiguration().getString("skin.1.texture"), msg.get("skin.1.name")));
+        inv.setItem(15, createSkull(main.getConfiguration().getString("skin.2.texture"), msg.get("skin.2.name")));
     }
 
-    private static ItemStack createSkull(String url, String name) {
+    /**
+     * Create player head from texture and name
+     * @param texture base64 texture value
+     * @param name Name of the itemstack
+     * @return head with the texture and name
+     */
+    private ItemStack createSkull(String texture, String name) {
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-        if (url.isEmpty())
+        if (texture.isEmpty())
             return head;
 
         SkullMeta headMeta = (SkullMeta) head.getItemMeta();
         GameProfile profile = new GameProfile(UUID.randomUUID(), null);
 
-        profile.getProperties().put("textures", new Property("textures", url));
+        profile.getProperties().put("textures", new Property("textures", texture));
         headMeta.setDisplayName(name);
 
         try {
@@ -71,6 +82,13 @@ public class GUIManager implements Listener {
         return head;
     }
 
+    /**
+     * Create a GUI item
+     * @param material Item in Material class
+     * @param name Name of the item
+     * @param lore Lore of the item
+     * @return Created ItemStack
+     */
     @SuppressWarnings("SameParameterValue")
     protected ItemStack createGuiItem(final Material material, final String name, final String... lore) {
         final ItemStack item = new ItemStack(material, 1);
@@ -83,6 +101,10 @@ public class GUIManager implements Listener {
         return item;
     }
 
+    /**
+     * Open an inventory to player
+     * @param ent Player/Entity
+     */
     public void openInventory(final HumanEntity ent) {
         ent.openInventory(inv);
     }
@@ -99,14 +121,14 @@ public class GUIManager implements Listener {
 
         final Player p = (Player) e.getWhoClicked();
 
-        Location spawn = Main.getEssentialsSpawn().getSpawn("default");
+        Location spawn = main.getEssentialsSpawn().getSpawn("default");
         Inventory inv = p.getInventory();
 
         switch(e.getRawSlot()) {
             case 11: {
                 try {
                     p.teleport(spawn);
-                    p.sendActionBar(Messages.getMessage("messages.actionbar.tptospawn"));
+                    p.sendActionBar(msg.get("messages.actionbar.tptospawn"));
                     inv.removeItem(token);
                     break;
                 } catch (NullPointerException err) {
@@ -116,7 +138,7 @@ public class GUIManager implements Listener {
             }
             case 15: {
 //                p.teleport(randomtp specific);
-                p.sendActionBar(Messages.getMessage("messages.actionbar.functionnotdone"));
+                p.sendActionBar(msg.get("messages.actionbar.functionnotdone"));
                 break;
             }
         }

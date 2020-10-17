@@ -10,25 +10,33 @@ import static org.bukkit.Bukkit.getLogger;
 import static org.bukkit.Bukkit.getServer;
 
 public class TokenRecipe {
-    public static NamespacedKey nsKey = new NamespacedKey(Main.getTpAddon(), "teleport_token");
-    private final static Token tokenclass = new Token();
-    private final static ItemStack token = tokenclass.token;
-    private final static ShapedRecipe tokenRecipe = new ShapedRecipe(nsKey, token);
+    private Main main;
+    public NamespacedKey nsKey;
+    private ShapedRecipe tokenRecipe;
 
-
-    public TokenRecipe() {
+    public TokenRecipe(Main main) {
+        this.main = main;
+        ItemStack token = main.getToken().token;
+        nsKey = new NamespacedKey(main, "teleport_token");
+        this.tokenRecipe = new ShapedRecipe(nsKey, token);
         checkIngredients();
     }
 
+    /**
+     * If recipe exists, delete it
+     */
     public void checkRecipe() {
         if (getServer().getRecipe(nsKey) != null) {
             getServer().removeRecipe(nsKey);
         }
     }
 
+    /**
+     * Check if ingredients from config are valid
+     */
     public void checkIngredients() {
-        String material1name = Config.getString("user.token.material1");
-        String material2name = Config.getString("user.token.material2");
+        String material1name = main.getConfiguration().getString("user.token.material1");
+        String material2name = main.getConfiguration().getString("user.token.material2");
 
         Material material1 = Material.getMaterial(material1name);
         Material material2 = Material.getMaterial(material2name);
@@ -43,9 +51,8 @@ public class TokenRecipe {
             getServer().addRecipe(tokenRecipe);
 
         } else {
-            getLogger().warning("Podane w konfiguracji materiały na przepis tokenu są nieprawidłowe. Nie rejestruje przepisu.");
+            getLogger().warning("Provided in config materials are not valid. Unregistering the recipe");
         }
-
 
     }
 }

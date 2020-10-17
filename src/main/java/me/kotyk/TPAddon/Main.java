@@ -2,12 +2,11 @@ package me.kotyk.TPAddon;
 
 import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.spawn.EssentialsSpawn;
-import me.kotyk.TPAddon.commands.*;
-import me.kotyk.TPAddon.util.Config;
-import me.kotyk.TPAddon.util.Messages;
-import me.kotyk.TPAddon.util.TokenRecipe;
-import net.ess3.api.events.TPARequestEvent;
-import org.bukkit.entity.Player;
+import me.kotyk.TPAddon.commands.token;
+import me.kotyk.TPAddon.commands.tpa;
+import me.kotyk.TPAddon.commands.tpaddon;
+import me.kotyk.TPAddon.commands.tpgui;
+import me.kotyk.TPAddon.util.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -18,38 +17,54 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
-import static org.bukkit.Bukkit.getServer;
-
 public class Main extends JavaPlugin implements Listener {
-    private static Main self;
-    private static EssentialsSpawn essspawn;
-    private static Essentials ess;
-    public TokenRecipe recipe;
-    public static String version = "1.0";
+    private Main self;
+    private Essentials ess;
+    private EssentialsSpawn essSpawn;
+
+    private Config config;
+    private Cooldown cmanager;
+    private Messages msg;
+    private GUIManager GM;
+    private Token token;
+    private TokenRecipe trecipe;
+
+    public String version = "1.0";
+    public PluginManager pm;
     public String prefix;
-    public static HashMap<UUID, Date> cooldowns = new HashMap<>();
 
     @SuppressWarnings("ConstantConditions")
     @Override
     public void onEnable() {
-        saveDefaultConfig();
-        PluginManager pm = getServer().getPluginManager();
-
         self = this;
-        prefix = Config.getString("messages.prefix");
+
+        saveDefaultConfig();
+        pm = getServer().getPluginManager();
+
+        config = new Config(this);
+        cmanager = new Cooldown(this);
+        msg = new Messages(this);
+        token = new Token(this);
+        trecipe = new TokenRecipe(this);
+        GM = new GUIManager(this);
+
+        prefix = config.getString("messages.prefix");
         ess = (Essentials) pm.getPlugin("Essentials");
-        essspawn = (EssentialsSpawn) pm.getPlugin("EssentialsSpawn");
-        recipe = new TokenRecipe();
+        essSpawn = (EssentialsSpawn) pm.getPlugin("EssentialsSpawn");
 
         getLogger().info(String.format("TPAddon version %s succesfully loaded.", version));
 
-        getCommand("tpaddon").setExecutor(new tpaddon());
-        getCommand("tpgui").setExecutor(new tpgui());
-        getCommand("token").setExecutor(new token());
-        getCommand("tpa").setExecutor(new tpa());
+        getCommand("tpaddon").setExecutor(new tpaddon(this));
+        getCommand("tpgui").setExecutor(new tpgui(this));
+        getCommand("token").setExecutor(new token(this));
+        getCommand("tpa").setExecutor(new tpa(this));
 
-        if(essspawn == null) {
-            getLogger().info("Nie znaleziono pluginu EssentialsSpawn, ten plugin jest wymagany do działania pluginu");
+        if (ess == null) {
+            getLogger().info("Essentials not found! This plugin is not required, but recommended.");
+        }
+        if (essSpawn == null) {
+            getLogger().warning("EssentialsSpawn not found! This plugin is required, disabling.");
+            pm.disablePlugin(this);
         }
 
         pm.registerEvents(this, this);
@@ -57,28 +72,45 @@ public class Main extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent e) {
-        e.getPlayer().discoverRecipe(TokenRecipe.nsKey);
-    }
-
-    @EventHandler
-    public void onTPRequest(final TPARequestEvent e) {
-        Player requester = e.getRequester().getPlayer();
-        Player target = (Player) e.getTarget();
-
-        target.sendMessage(String.format(Messages.getMessage("messages.tpa.requests.received"), requester.getName()));
+        e.getPlayer().discoverRecipe(trecipe.nsKey);
     }
 
     @Override
     public void onDisable() {
-        recipe.checkRecipe();
+        trecipe.checkRecipe();
     }
 
-    public static Main getTpAddon() { return self; }
+    public Main getMain() { return self; }
 
-    public static Essentials getEssentials() {
+    public Essentials getEssentials() {
         return ess;
     }
-    public static EssentialsSpawn getEssentialsSpawn() {
-        return essspawn;
+
+    public EssentialsSpawn getEssentialsSpawn() {
+        return essSpawn;
+    }
+
+    public Config getConfiguration() {
+        return config;
+    }
+
+    public Cooldown getCooldownM() {
+        return cmanager;
+    }
+
+    public Messages getMessages() {
+        return msg;
+    }
+
+    public GUIManager getGM() {
+        return GM;
+    }
+
+    public Token getToken() {
+        return token;
+    }
+
+    public TokenRecipe getTrecipe() {
+        return trecipe;
     }
 }

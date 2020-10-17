@@ -3,11 +3,12 @@
 
 ## We don't provide support if this section was changed.
 plugin:
-  version: 1.0-RELEASE
+  debug: false # more stuff in console
+  version: 1.1-rc.v1 # version
 
 ## User section, something that user will often see
 user:
-  nazwa-itemu: "&1Token teleportacji"
+  nazwa-itemu: "&1Token teleportacji" # Name change will cause problems with canceling token placement
   token:
     material1: "DIAMOND"
     material2: "STICK"
@@ -43,6 +44,7 @@ messages:
       sent: "Wysłano zapytanie teleportacji do gracza %s"
       received: "Otrzymano zapytanie teleportacji od gracza %s"
   token:
+    info: "changeme"
     noToken: "Nie posiadasz tokenu teleportacji. Jak go zdobyć? /token info"
     give: "Przyznano ci token teleportacji."
     giveother: "Przyznano graczowi %s token teleportacji."

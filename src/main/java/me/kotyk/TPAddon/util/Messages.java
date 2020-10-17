@@ -6,25 +6,48 @@ import org.bukkit.ChatColor;
 import java.util.Arrays;
 
 public class Messages {
-    public static String getMessage(String message) {
-        String[] array = {"user.nazwa-itemu", "gui.name", "skin.1.name", "skin.2.name", "messages.actionbar.tptospawn", "messages.actionbar.functionnotdone", "messages.tpa.usage", "messages.tpa.command"};
+    private Main main;
 
-        if(Arrays.asList(array).contains(message)) {
-            return ChatColor.translateAlternateColorCodes('&', Config.getString(message));
-        }
-
-        if (message.toLowerCase().equals("version")) {
-            return ChatColor.translateAlternateColorCodes('&', String.format("%sWersja %s by kotyk", Main.getTpAddon().prefix, Main.version));
-        }
-
-        return ChatColor.translateAlternateColorCodes('&', Main.getTpAddon().prefix + Config.getString(message));
+    public Messages(Main main) {
+        this.main = main;
     }
 
-    public static String createFormattedMessage(String message, int toFormat) {
-        return ChatColor.translateAlternateColorCodes('&', String.format(getMessage(message), toFormat));
+    /**
+     * Returns formatted string with prefix from config
+     * @param location Location
+     * @return String with formatted prefix (if needed)
+     */
+    public String get(String location) {
+        String[] noPrefix = {"user.nazwa-itemu", "gui.name", "skin.1.name", "skin.2.name", "messages.actionbar.tptospawn", "messages.actionbar.functionnotdone", "messages.tpa.usage", "messages.tpa.command", "messages.actionbar.cancelplace"};
+
+        if(Arrays.asList(noPrefix).contains(location)) {
+            return ChatColor.translateAlternateColorCodes('&', main.getConfiguration().getString(location));
+        }
+
+        if (location.toLowerCase().equals("version")) {
+            return ChatColor.translateAlternateColorCodes('&', String.format("%sVersion %s by @kotyk7", main.prefix, main.version));
+        }
+
+        return ChatColor.translateAlternateColorCodes('&', main.prefix + main.getConfiguration().getString(location));
     }
 
-    public static String createFormattedMessage(String message, String toFormat) {
-        return ChatColor.translateAlternateColorCodes('&', String.format(getMessage(message), toFormat));
+    /**
+     * Returns formatted string with integer from config
+     * @param location Location
+     * @param integer Integer to add to the message, if %s is not present in location - ignoring
+     * @return String with formatted integer
+     */
+    public String format(String location, int integer) {
+        return ChatColor.translateAlternateColorCodes('&', String.format(get(location), integer));
+    }
+
+    /**
+     * Returns formatted string with string from config
+     * @param location Location
+     * @param string String to add to the message, if %s is not present in location - ignoring
+     * @return String with formatted string
+     */
+    public String format(String location, String string) {
+        return ChatColor.translateAlternateColorCodes('&', String.format(get(location), string));
     }
 }

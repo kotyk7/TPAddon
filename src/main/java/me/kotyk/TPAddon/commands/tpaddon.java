@@ -11,16 +11,23 @@ import java.util.Arrays;
 import java.util.List;
 
 public class tpaddon implements TabExecutor {
+    private Messages msg;
+    private Main main;
+
+    public tpaddon(Main main) {
+        this.main = main;
+        this.msg = main.getMessages();
+    }
 
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (args.length < 1 || !sender.hasPermission("tpaddon.admin")) {
-            sender.sendMessage(Messages.getMessage("version"));
+            sender.sendMessage(msg.get("version"));
         } else if (args[0].equalsIgnoreCase("reload")) {
-            Main.getTpAddon().reloadConfig();
-            Main.getTpAddon().recipe.checkIngredients();
-            sender.sendMessage(Messages.getMessage("messages.configReloaded"));
+            main.reloadConfig();
+            main.getTrecipe().checkIngredients();
+            sender.sendMessage(msg.get("messages.configReloaded"));
         } else {
-            sender.sendMessage(Messages.getMessage("messages.unknownCommand"));
+            sender.sendMessage(msg.get("messages.unknownCommand"));
         }
 
         return true;
