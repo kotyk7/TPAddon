@@ -6,8 +6,10 @@ import org.bukkit.ChatColor;
 import java.util.Arrays;
 
 public class Messages {
-    public Messages(Main main) {
+    private Main main;
 
+    public Messages(Main main) {
+        this.main = main;
     }
 
     /**
@@ -15,18 +17,18 @@ public class Messages {
      * @param location Location
      * @return String with formatted prefix (if needed)
      */
-    public static String getMessage(String location) {
+    public String get(String location) {
         String[] noPrefix = {"user.nazwa-itemu", "gui.name", "skin.1.name", "skin.2.name", "messages.actionbar.tptospawn", "messages.actionbar.functionnotdone", "messages.tpa.usage", "messages.tpa.command", "messages.actionbar.cancelplace"};
 
         if(Arrays.asList(noPrefix).contains(location)) {
-            return ChatColor.translateAlternateColorCodes('&', Config.getString(location));
+            return ChatColor.translateAlternateColorCodes('&', main.getConfiguration().getString(location));
         }
 
         if (location.toLowerCase().equals("version")) {
-            return ChatColor.translateAlternateColorCodes('&', String.format("%sVersion %s by @kotyk7", Main.getMain().prefix, Main.version));
+            return ChatColor.translateAlternateColorCodes('&', String.format("%sVersion %s by @kotyk7", main.prefix, main.version));
         }
 
-        return ChatColor.translateAlternateColorCodes('&', Main.getMain().prefix + Config.getString(location));
+        return ChatColor.translateAlternateColorCodes('&', main.prefix + main.getConfiguration().getString(location));
     }
 
     /**
@@ -35,8 +37,8 @@ public class Messages {
      * @param integer Integer to add to the message, if %s is not present in location - ignoring
      * @return String with formatted integer
      */
-    public static String createFormattedMessage(String location, int integer) {
-        return ChatColor.translateAlternateColorCodes('&', String.format(getMessage(location), integer));
+    public String format(String location, int integer) {
+        return ChatColor.translateAlternateColorCodes('&', String.format(get(location), integer));
     }
 
     /**
@@ -45,7 +47,7 @@ public class Messages {
      * @param string String to add to the message, if %s is not present in location - ignoring
      * @return String with formatted string
      */
-    public static String createFormattedMessage(String location, String string) {
-        return ChatColor.translateAlternateColorCodes('&', String.format(getMessage(location), string));
+    public String format(String location, String string) {
+        return ChatColor.translateAlternateColorCodes('&', String.format(get(location), string));
     }
 }

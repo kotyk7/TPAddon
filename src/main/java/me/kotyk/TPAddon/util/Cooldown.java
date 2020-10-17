@@ -3,15 +3,25 @@ package me.kotyk.TPAddon.util;
 import me.kotyk.TPAddon.Main;
 import org.bukkit.entity.Player;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.UUID;
+
 import org.jetbrains.annotations.NotNull;
 
-public class CooldownManager {
+public class Cooldown {
+    private static HashMap<UUID, Date> dict = new HashMap<>();
+    private static int cooldown;
+
+    public Cooldown(Main main) {
+        cooldown = main.getConfiguration().getInteger("cooldown");
+    }
+
     /**
      * Set defined in config cooldown for player
      * @param p Player to set cooldown
      */
-    public static void setCooldownTime(Player p) {
-        Main.cooldowns.put(p.getUniqueId(), new Date());
+    public static void setCooldownTime(@NotNull Player p) {
+        dict.put(p.getUniqueId(), new Date());
     }
 
     /**
@@ -19,7 +29,7 @@ public class CooldownManager {
      * @param p Player
      */
     public static void removeCooldownTime(@NotNull Player p) {
-        Main.cooldowns.remove(p.getUniqueId());
+        dict.remove(p.getUniqueId());
     }
 
     /**
@@ -28,12 +38,12 @@ public class CooldownManager {
      * @return boolean
      */
     public static boolean isOnCooldown(@NotNull Player player) {
-        if(Main.cooldowns.containsKey(player.getUniqueId())) {
-            Date lastChange = Main.cooldowns.get(player.getUniqueId());
+        if(dict.containsKey(player.getUniqueId())) {
+            Date lastChange = dict.get(player.getUniqueId());
             Date currentTime = new Date();
             int seconds = (int) (currentTime.getTime() - lastChange.getTime())/1000;
-            if(seconds > Config.getInteger("cooldown") || player.hasPermission("tpaddon.cooldown.bypass")) {
-                CooldownManager.removeCooldownTime(player);
+            if(seconds > cooldown || player.hasPermission("tpaddon.cooldown.bypass")) {
+                removeCooldownTime(player);
                 return false;
             } else {
                 return true;
@@ -49,14 +59,14 @@ public class CooldownManager {
      * @return Returns cooldown, if no key in the HashMap it returns 0
      */
     public static int getCooldown(Player player) {
-        if(Main.cooldowns.containsKey(player.getUniqueId())) {
-            Date lastChange = Main.cooldowns.get(player.getUniqueId());
+        if(dict.containsKey(player.getUniqueId())) {
+            Date lastChange = dict.get(player.getUniqueId());
             Date currentTime = new Date();
             int seconds = (int) (currentTime.getTime() - lastChange.getTime())/1000;
-            if(seconds > Config.getInteger("cooldown") || player.hasPermission("tpaddon.cooldown.bypass")) {
-                CooldownManager.removeCooldownTime(player);
+            if(seconds > cooldown || player.hasPermission("tpaddon.cooldown.bypass")) {
+                removeCooldownTime(player);
             }
-            return Config.getInteger("cooldown") - seconds;
+            return cooldown - seconds;
         } else {
             return 0;
         }

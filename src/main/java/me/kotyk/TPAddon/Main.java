@@ -6,8 +6,7 @@ import me.kotyk.TPAddon.commands.token;
 import me.kotyk.TPAddon.commands.tpa;
 import me.kotyk.TPAddon.commands.tpaddon;
 import me.kotyk.TPAddon.commands.tpgui;
-import me.kotyk.TPAddon.util.Config;
-import me.kotyk.TPAddon.util.TokenRecipe;
+import me.kotyk.TPAddon.util.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -19,28 +18,39 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class Main extends JavaPlugin implements Listener {
-    private static Main self;
-    private static Essentials Essentials;
-    private static EssentialsSpawn EssentialsSpawn;
-    public static boolean debug = false;
-    public static String version = "1.0";
-    public static HashMap<UUID, Date> cooldowns = new HashMap<>();
+    private Main self;
+    private Essentials ess;
+    private EssentialsSpawn essSpawn;
+
+    private Config config;
+    private Cooldown cmanager;
+    private Messages msg;
+    private GUIManager GM;
+    private Token token;
+    private TokenRecipe trecipe;
+
+    public String version = "1.0";
     public PluginManager pm;
-    public TokenRecipe recipe;
     public String prefix;
 
     @SuppressWarnings("ConstantConditions")
     @Override
     public void onEnable() {
+        self = this;
+
         saveDefaultConfig();
         pm = getServer().getPluginManager();
 
-        self = this;
-        prefix = Config.getString("messages.prefix");
-        Essentials = (Essentials) pm.getPlugin("Essentials");
-        EssentialsSpawn = (EssentialsSpawn) pm.getPlugin("EssentialsSpawn");
-        recipe = new TokenRecipe();
-        debug = Config.getBoolean("debug");
+        config = new Config(this);
+        cmanager = new Cooldown(this);
+        msg = new Messages(this);
+        token = new Token(this);
+        trecipe = new TokenRecipe(this);
+        GM = new GUIManager(this);
+
+        prefix = config.getString("messages.prefix");
+        ess = (Essentials) pm.getPlugin("Essentials");
+        essSpawn = (EssentialsSpawn) pm.getPlugin("EssentialsSpawn");
 
         getLogger().info(String.format("TPAddon version %s succesfully loaded.", version));
 
@@ -49,10 +59,10 @@ public class Main extends JavaPlugin implements Listener {
         getCommand("token").setExecutor(new token(this));
         getCommand("tpa").setExecutor(new tpa(this));
 
-        if (Essentials == null) {
+        if (ess == null) {
             getLogger().info("Essentials not found! This plugin is not required, but recommended.");
         }
-        if (EssentialsSpawn == null) {
+        if (essSpawn == null) {
             getLogger().warning("EssentialsSpawn not found! This plugin is required, disabling.");
             pm.disablePlugin(this);
         }
@@ -62,33 +72,45 @@ public class Main extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent e) {
-        e.getPlayer().discoverRecipe(TokenRecipe.nsKey);
+        e.getPlayer().discoverRecipe(trecipe.nsKey);
     }
 
     @Override
     public void onDisable() {
-        recipe.checkRecipe();
+        trecipe.checkRecipe();
     }
 
-    /**
-     * Returns static Main class
-     * @return Main class
-     */
-    public static Main getMain() { return self; }
+    public Main getMain() { return self; }
 
-    /**
-     * Returns static Essentials class
-     * @return Essentials class
-     */
-    public static Essentials getEssentials() {
-        return Essentials;
+    public Essentials getEssentials() {
+        return ess;
     }
 
-    /**
-     * Returns static EssentialsSpawn class
-     * @return EssentialsSpawn class
-     */
-    public static EssentialsSpawn getEssentialsSpawn() {
-        return EssentialsSpawn;
+    public EssentialsSpawn getEssentialsSpawn() {
+        return essSpawn;
+    }
+
+    public Config getConfiguration() {
+        return config;
+    }
+
+    public Cooldown getCooldownM() {
+        return cmanager;
+    }
+
+    public Messages getMessages() {
+        return msg;
+    }
+
+    public GUIManager getGM() {
+        return GM;
+    }
+
+    public Token getToken() {
+        return token;
+    }
+
+    public TokenRecipe getTrecipe() {
+        return trecipe;
     }
 }

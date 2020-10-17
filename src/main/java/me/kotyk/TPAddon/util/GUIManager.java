@@ -23,18 +23,22 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.UUID;
 
-import static org.bukkit.Bukkit.getServer;
-
 public class GUIManager implements Listener {
+    private Main main;
+    private Messages msg;
     private final Inventory inv;
     private ItemStack token;
 
     public GUIManager(Main main) {
-        inv = Bukkit.createInventory(null, 27, Messages.getMessage("gui.name"));
+        this.main = main;
+        this.token = main.getToken().token;
+        this.msg = main.getMessages();
+
+        this.inv = Bukkit.createInventory(null, 27, msg.get("gui.name"));
 
         initializeItems();
 
-        main.pm.registerEvents(this, Main.getMain());
+        main.pm.registerEvents(this, main);
     }
 
     /**
@@ -44,11 +48,9 @@ public class GUIManager implements Listener {
         for (int i = 0; i < 27; i++) {
             inv.setItem(i, createGuiItem(Material.BLACK_STAINED_GLASS_PANE, "⠀"));
         }
-        inv.setItem(11, createSkull(Config.getString("skin.1.texture"), Messages.getMessage("skin.1.name")));
-        inv.setItem(15, createSkull(Config.getString("skin.2.texture"), Messages.getMessage("skin.2.name")));
 
-        Token tokenClass = new Token();
-        token = tokenClass.token;
+        inv.setItem(11, createSkull(main.getConfiguration().getString("skin.1.texture"), msg.get("skin.1.name")));
+        inv.setItem(15, createSkull(main.getConfiguration().getString("skin.2.texture"), msg.get("skin.2.name")));
     }
 
     /**
@@ -57,7 +59,7 @@ public class GUIManager implements Listener {
      * @param name Name of the itemstack
      * @return head with the texture and name
      */
-    private static ItemStack createSkull(String texture, String name) {
+    private ItemStack createSkull(String texture, String name) {
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         if (texture.isEmpty())
             return head;
@@ -119,14 +121,14 @@ public class GUIManager implements Listener {
 
         final Player p = (Player) e.getWhoClicked();
 
-        Location spawn = Main.getEssentialsSpawn().getSpawn("default");
+        Location spawn = main.getEssentialsSpawn().getSpawn("default");
         Inventory inv = p.getInventory();
 
         switch(e.getRawSlot()) {
             case 11: {
                 try {
                     p.teleport(spawn);
-                    p.sendActionBar(Messages.getMessage("messages.actionbar.tptospawn"));
+                    p.sendActionBar(msg.get("messages.actionbar.tptospawn"));
                     inv.removeItem(token);
                     break;
                 } catch (NullPointerException err) {
@@ -136,7 +138,7 @@ public class GUIManager implements Listener {
             }
             case 15: {
 //                p.teleport(randomtp specific);
-                p.sendActionBar(Messages.getMessage("messages.actionbar.functionnotdone"));
+                p.sendActionBar(msg.get("messages.actionbar.functionnotdone"));
                 break;
             }
         }
