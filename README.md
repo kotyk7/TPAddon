@@ -1,4 +1,4 @@
-![Workflow](https://github.com/kotyk7/TPAddon/workflows/Java%20CI%20with%20Maven/badge.png)    
+![Workflow](https://github.com/kotyk7/TPAddon/workflows/Java%20CI%20with%20Maven/badge.svg)    
 [Trello 🐛](https://trello.com/b/ZcJTnbkd/tpaddon)  
 
 ## TPAddon is a plugin that redefines teleportation methods on your server!  
