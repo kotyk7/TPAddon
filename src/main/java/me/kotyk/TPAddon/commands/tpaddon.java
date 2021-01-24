@@ -24,7 +24,7 @@ public class tpaddon implements TabExecutor {
             sender.sendMessage(msg.get("version"));
         } else if (args[0].equalsIgnoreCase("reload")) {
             main.reloadConfig();
-            main.getTrecipe().checkIngredients();
+            main.getToken().checkIngredients();
             sender.sendMessage(msg.get("messages.configReloaded"));
         } else {
             sender.sendMessage(msg.get("messages.unknownCommand"));
@@ -36,6 +36,6 @@ public class tpaddon implements TabExecutor {
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (!sender.hasPermission("tpaddon.admin")) return null;
         if (args.length != 1) return null;
-        return Arrays.asList("reload", "removeconfig");
+        return Arrays.asList("reload");
     }
 }

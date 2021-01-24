@@ -1,28 +1,27 @@
 name: TPAddon
 description: TPAddon is a plugin that redefines teleportation methods on your server!
 main: me.kotyk.TPAddon.Main
-version: 1.1-rc.v1
+version: 1.1
 author: kotyk7
-depend: [EssentialsSpawn]
 website: https://github.com/kotyk7/TPAddon
-softdepend: [Essentials]
+depend: [Essentials]
 api-version: "1.16"
 
 commands:
   tpaddon:
-    description: "Komenda administracyjna"
+    description: "Basic TPAddon command"
     usage: "/tpaddon <subcommand>"
-
   tpgui:
-    description: "Teleportation GUI"
+    description: "TPAddon teleportation GUI"
     usage: "/tpgui <subcommand>"
     aliases:
       - teleportgui
-  token:
-    description: "Token information, how to get it"
-    usage: "/token <subcommand>"
-    aliases:
-      - tptoken
   tpa:
     description: "Sends a teleportation request to another player"
     usage: "/tpa <player>"
+  home:
+    description: "Teleports you to your home!"
+    usage: "/home"
+  spawn:
+    description: "Teleports you to the world spawnpoint!"
+    usage: "/spawn"

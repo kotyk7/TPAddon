@@ -16,14 +16,15 @@ import java.util.List;
 
 public class tpgui implements TabExecutor {
     private Main main;
+    private Cooldown cd;
 
     public tpgui(Main main) {
         this.main = main;
+        this.cd = main.getCooldownM();
     }
 
     @Override
     public boolean onCommand(@Nonnull CommandSender sender, @Nonnull Command command, @Nonnull String s, @Nonnull String[] args) {
-        GUIManager GM = main.getGM();
         Messages msg = main.getMessages();
         ItemStack token = main.getToken().token;
 
@@ -33,15 +34,15 @@ public class tpgui implements TabExecutor {
         Inventory inv = player.getInventory();
 
         // Brak argumentów
-        if (args.length < 1) {
+        if (args.length < 1 || sender.hasPermission("tpaddon.open")) {
             if (inv.containsAtLeast(token, 1)) {
-                if(!Cooldown.isOnCooldown(player)) {
+                if(!cd.isOnCooldown(player)) {
                     sender.sendMessage(msg.get("messages.gui.open"));
                     openGUI(player);
-                    Cooldown.setCooldownTime(player);
+                    cd.setCooldown(player);
                 }
                 else {
-                    sender.sendMessage(msg.format("messages.cooldown.message", Cooldown.getCooldown(player)));
+                    sender.sendMessage(msg.format("messages.cooldown.message", cd.getCooldown(player)));
                 }
             } else {
                 sender.sendMessage(msg.get("messages.token.noToken"));
@@ -52,90 +53,40 @@ public class tpgui implements TabExecutor {
         // Jeżeli argument jest podany
         String subcommand = args[0].toLowerCase();
 
-        // Przykład subkomendy give: /tpaddon give
-        switch(subcommand) {
-            case "cooldown": {
-                if(sender.hasPermission("tpaddon.cooldown.others")) {
-                    try {
-                        Player target = Bukkit.getPlayerExact(args[1]);
-                        assert target != null;
-                        if (!target.isOnline()) {
-                            sender.sendMessage(msg.get("messages.playernotfound"));
-                        }
-                        sender.sendMessage(msg.format("messages.cooldown.checkother", Cooldown.getCooldown(target)));
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        if (Cooldown.getCooldown(player) <= 0) {
-                            sender.sendMessage(msg.format("messages.cooldown.check", Cooldown.getCooldown(player)));
-                        } else {
-                            sender.sendMessage(msg.get("messages.cooldown.nocooldown"));
-                        }
-                    }
-                } else {
-                    if (Cooldown.getCooldown(player) <= 0) {
-                        sender.sendMessage(msg.format("messages.cooldown.check", Cooldown.getCooldown(player)));
+        if(subcommand.equals("cooldown")) {
+            if(args.length >= 2) {
+                if(args[1].equals("reset") || sender.hasPermission("tpaddon.cooldown.others")) {
+                    Player targetToReset = Bukkit.getPlayerExact(args[2]);
+                    if(targetToReset != null) {
+                        sender.sendMessage(msg.format("messages.cooldown.checkother", cd.getCooldown(targetToReset)));
                     } else {
-                        sender.sendMessage(msg.get("messages.cooldown.nocooldown"));
+                        sender.sendMessage(msg.get("messages.playernotfound"));
                     }
                 }
-                break;
-            }
-            case "cooldownreset": {
-                if(!sender.hasPermission("tpaddon.cooldown.reset")) { sender.sendMessage(msg.get("messages.unknownCommand")); return true;}
-                    try {
-                    Player target = Bukkit.getPlayerExact(args[1]);
-                    assert target != null;
-                    if (!target.isOnline()) { sender.sendMessage(msg.get("messages.playernotfound")); }
-                        sender.sendMessage(msg.format("messages.cooldown.reset", target.getName()));
-                    Cooldown.removeCooldownTime(target);
-                    break;
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    sender.sendMessage(msg.format("messages.cooldown.reset", player.getName()));
-                    Cooldown.removeCooldownTime(player);
-                    break;
+            } else {
+                if (cd.isOnCooldown(player)) {
+                    sender.sendMessage(msg.format("messages.cooldown.check", cd.getCooldown(player)));
+                } else {
+                    sender.sendMessage(msg.get("messages.cooldown.nocooldown"));
                 }
             }
 
-            case "give": {
-                try {
-                    if(!sender.hasPermission("tpaddon.give.others")) { sender.sendMessage(msg.get("messages.unknownCommand")); return true;}
-                    Player target = Bukkit.getPlayerExact(args[1]);
-                    assert target != null;
-                    if (!target.isOnline()) {
+        } else if(subcommand.equals("open")) {
+            if(args.length >= 1) {
+                if(sender.hasPermission("tpaddon.open.others")) {
+                    Player targetToOpenGUI = Bukkit.getPlayerExact(args[1]);
+                    if(targetToOpenGUI != null) {
+                        openGUI(targetToOpenGUI);
+                    } else {
                         sender.sendMessage(msg.get("messages.playernotfound"));
-                        break;
                     }
-                    target.getInventory().addItem(token);
-                    sender.sendMessage(msg.format("messages.token.giveother", target.getName()));
-                    break;
-                } catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
-                    if(!sender.hasPermission("tpaddon.give")) { sender.sendMessage(msg.get("messages.unknownCommand")); return true;}
-                    sender.sendMessage(msg.get("messages.token.give"));
-                    inv.addItem(token);
-                    break;
-                }
-            }
-            case "open": {
-                try {
-                    if(!sender.hasPermission("tpaddon.open.others")) { sender.sendMessage(msg.get("messages.unknownCommand")); return true;}
-                    Player target = Bukkit.getPlayerExact(args[1]);
-                    assert target != null;
-                    if (!target.isOnline()) {
-                        sender.sendMessage(msg.get("messages.playernotfound"));
-                        break;
+                } else if(sender.hasPermission("tpaddon.open")) {
+                    if(player.getInventory().containsAtLeast(main.getToken().token, 1)) {
+                        openGUI(player);
                     }
-                    openGUI(target);
-                    sender.sendMessage(msg.format("messages.gui.openother", target.getName()));
-                    break;
-                } catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
-                    if(!sender.hasPermission("tpaddon.open")) { sender.sendMessage(msg.get("messages.unknownCommand")); return true;}
-                    sender.sendMessage(msg.get("messages.gui.open"));
-                    openGUI(player);
-                    break;
+                } else {
+                    sender.sendMessage(msg.get("messages.unknownCommand"));
                 }
-            }
-            default: {
-                sender.sendMessage(msg.get("messages.unknownCommand"));
-                break;
             }
         }
         return true;

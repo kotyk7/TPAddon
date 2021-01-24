@@ -2,6 +2,7 @@ package me.kotyk.TPAddon.util;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import io.papermc.lib.PaperLib;
 import me.kotyk.TPAddon.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -51,6 +52,11 @@ public class GUIManager implements Listener {
 
         inv.setItem(11, createSkull(main.getConfiguration().getString("skin.1.texture"), msg.get("skin.1.name")));
         inv.setItem(15, createSkull(main.getConfiguration().getString("skin.2.texture"), msg.get("skin.2.name")));
+    }
+
+    public void takeItem(Player player) {
+        Inventory inv = player.getInventory();
+        inv.removeItem(token);
     }
 
     /**
@@ -121,15 +127,20 @@ public class GUIManager implements Listener {
 
         final Player p = (Player) e.getWhoClicked();
 
-        Location spawn = main.getEssentialsSpawn().getSpawn("default");
+        Location spawn = main.getServer().getWorlds().get(0).getSpawnLocation();
         Inventory inv = p.getInventory();
 
         switch(e.getRawSlot()) {
             case 11: {
                 try {
-                    p.teleport(spawn);
-                    p.sendActionBar(msg.get("messages.actionbar.tptospawn"));
-                    inv.removeItem(token);
+                    PaperLib.teleportAsync(p, spawn).thenAccept(result -> {
+                        if (result) {
+                            p.sendActionBar(msg.get("messages.actionbar.tptospawn", false));
+                            inv.removeItem(token);
+                        } else {
+                            p.sendActionBar(msg.get("messages.actionbar.tperror", false));
+                        }
+                    });
                     break;
                 } catch (NullPointerException err) {
                     err.printStackTrace();
@@ -137,8 +148,19 @@ public class GUIManager implements Listener {
                 }
             }
             case 15: {
-//                p.teleport(randomtp specific);
-                p.sendActionBar(msg.get("messages.actionbar.functionnotdone"));
+                try {
+                    if (p.getBedSpawnLocation() != null && p.getBedSpawnLocation() != p.getWorld().getSpawnLocation()) {
+                        if(p.getInventory().containsAtLeast(main.getToken().token, 1)) {
+                            p.teleport(p.getBedSpawnLocation());
+                            main.getGM().takeItem(p);
+                            p.sendActionBar(msg.get("messages.home.teleported", false));
+                        }
+                    } else {
+                        p.sendActionBar(msg.get("messages.home.nohome", false));
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 break;
             }
         }

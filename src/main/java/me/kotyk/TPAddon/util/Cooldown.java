@@ -9,10 +9,14 @@ import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 
 public class Cooldown {
-    private static HashMap<UUID, Date> dict = new HashMap<>();
-    private static int cooldown;
+    private Main main;
+    private static String permission = "tpaddon.cooldown.bypass";
+    
+    private HashMap<UUID, Date> dict = new HashMap<>();
+    private int cooldown;
 
     public Cooldown(Main main) {
+        this.main = main;
         cooldown = main.getConfiguration().getInteger("cooldown");
     }
 
@@ -20,30 +24,46 @@ public class Cooldown {
      * Set defined in config cooldown for player
      * @param p Player to set cooldown
      */
-    public static void setCooldownTime(@NotNull Player p) {
-        dict.put(p.getUniqueId(), new Date());
+    public void setCooldown(@NotNull Player p) {
+        setCooldown(p.getUniqueId());
     }
 
     /**
      * Remove the cooldown from player
      * @param p Player
      */
-    public static void removeCooldownTime(@NotNull Player p) {
-        dict.remove(p.getUniqueId());
+    public void removeCooldown(@NotNull Player p) {
+        removeCooldown(p.getUniqueId());
     }
 
     /**
-     * The method checks if player is currently on cooldown
-     * @param player Player to check
+     * Sets cooldown
+     * @param uuid Player's uuid
+     */
+    public void setCooldown(@NotNull UUID uuid) {
+        dict.put(uuid, new Date());
+    }
+
+    /**
+     * Remove the cooldown from player
+     * @param uuid Player's uuid
+     */
+    public void removeCooldown(@NotNull UUID uuid) {
+        dict.remove(uuid);
+    }
+
+    /**
+     * Returns bool if a player is currently on cooldown
+     * @param player Player
      * @return boolean
      */
-    public static boolean isOnCooldown(@NotNull Player player) {
+    public boolean isOnCooldown(@NotNull Player player) {
         if(dict.containsKey(player.getUniqueId())) {
             Date lastChange = dict.get(player.getUniqueId());
             Date currentTime = new Date();
             int seconds = (int) (currentTime.getTime() - lastChange.getTime())/1000;
-            if(seconds > cooldown || player.hasPermission("tpaddon.cooldown.bypass")) {
-                removeCooldownTime(player);
+            if(seconds > cooldown || player.hasPermission(permission)) {
+                removeCooldown(player);
                 return false;
             } else {
                 return true;
@@ -54,17 +74,17 @@ public class Cooldown {
     }
 
     /**
-     * Returns player cooldown if present
-     * @param player Player to check
-     * @return Returns cooldown, if no key in the HashMap it returns 0
+     * Returns player cooldown.
+     * @param player Player
+     * @return Returns current player cooldown, can be 0.
      */
-    public static int getCooldown(Player player) {
+    public int getCooldown(Player player) {
         if(dict.containsKey(player.getUniqueId())) {
             Date lastChange = dict.get(player.getUniqueId());
             Date currentTime = new Date();
             int seconds = (int) (currentTime.getTime() - lastChange.getTime())/1000;
-            if(seconds > cooldown || player.hasPermission("tpaddon.cooldown.bypass")) {
-                removeCooldownTime(player);
+            if(seconds > cooldown || player.hasPermission(permission)) {
+                removeCooldown(player);
             }
             return cooldown - seconds;
         } else {
