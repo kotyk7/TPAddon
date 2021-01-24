@@ -1,4 +1,5 @@
-![Workflow](https://github.com/CraftCastle/TPAddon/workflows/Java%20CI%20with%20Maven/badge.png)  
+master ![Java CI with Maven](https://github.com/CraftCastle/TPAddon/workflows/Java%20CI%20with%20Maven/badge.svg?branch=master)  
+dev ![Java CI with Maven](https://github.com/CraftCastle/TPAddon/workflows/Java%20CI%20with%20Maven/badge.svg?branch=dev)  
 [Trello 🐛](https://trello.com/b/ZcJTnbkd/tpaddon)  
 
 ## TPAddon is a plugin that redefines teleportation methods on your server!  
